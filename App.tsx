@@ -1,17 +1,19 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { EditorPanel } from './components/EditorPanel';
+import { SettingsPanel } from './components/SettingsPanel';
 import { Preview } from './components/Preview';
 import type { Profile, Link, Appearance } from './types';
 import { DEFAULT_PROFILE, DEFAULT_LINKS, THEMES } from './constants';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { SettingsIcon } from './components/icons/EditorIcons';
 
 const App: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [links, setLinks] = useState<Link[]>(DEFAULT_LINKS);
   const [appearance, setAppearance] = useState<Appearance>(THEMES[0].appearance);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -60,27 +62,34 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <main className="container mx-auto p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-7">
-              <EditorPanel
-                profile={profile}
-                setProfile={setProfile}
-                links={links}
-                setLinks={setLinks}
-                appearance={appearance}
-                setAppearance={setAppearance}
-                moveLink={moveLink}
-              />
-            </div>
-            <div className="lg:col-span-5">
-              <div className="sticky top-24">
-                <h2 className="text-lg font-semibold mb-4 text-center text-gray-700 dark:text-gray-300">Live Preview</h2>
-                <Preview profile={profile} links={links} appearance={appearance} />
-              </div>
-            </div>
-          </div>
+        <main className="relative flex flex-col items-center justify-start p-4 sm:p-6 lg:p-8">
+           <div className="w-full max-w-sm mt-8">
+              <h2 className="text-lg font-semibold mb-4 text-center text-gray-700 dark:text-gray-300">Live Preview</h2>
+              <Preview profile={profile} links={links} appearance={appearance} />
+           </div>
         </main>
+
+        <div className="fixed bottom-6 right-6 z-30">
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg transform hover:scale-110 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            aria-label="Open settings"
+          >
+            <SettingsIcon className="w-6 h-6"/>
+          </button>
+        </div>
+
+        <SettingsPanel
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          profile={profile}
+          setProfile={setProfile}
+          links={links}
+          setLinks={setLinks}
+          appearance={appearance}
+          setAppearance={setAppearance}
+          moveLink={moveLink}
+        />
       </div>
     </DndProvider>
   );

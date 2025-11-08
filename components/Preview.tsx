@@ -50,11 +50,38 @@ export const Preview: React.FC<PreviewProps> = ({ profile, links, appearance }) 
     };
   };
 
-  const linkStyle = (link: Link): React.CSSProperties => ({
+  const linkBaseStyle = (link: Link): React.CSSProperties => ({
     backgroundColor: appearance.linkStyle.background,
     color: appearance.linkStyle.textColor,
     opacity: link.active ? 1 : 0.5,
   });
+  
+  const getAnimationProps = (): { className?: string; style?: React.CSSProperties } => {
+    const anim = appearance.animation;
+
+    if (!anim || anim === 'none') {
+        return {};
+    }
+
+    if (typeof anim === 'string') {
+        return { className: anim };
+    }
+
+    if (typeof anim === 'object') {
+        return {
+            style: {
+                animationName: anim.type,
+                animationDuration: `${anim.duration}s`,
+                animationDelay: `${anim.delay}s`,
+                animationIterationCount: anim.iterationCount,
+                animationDirection: anim.direction,
+                animationTimingFunction: anim.timingFunction,
+                animationFillMode: 'both',
+            },
+        };
+    }
+    return {};
+  };
 
   return (
     <div className="w-full max-w-sm mx-auto bg-gray-900 dark:bg-black rounded-3xl p-2 shadow-2xl">
@@ -85,6 +112,10 @@ export const Preview: React.FC<PreviewProps> = ({ profile, links, appearance }) 
               : 'space-y-4'
             }`}>
               {links.filter(l => l.active).map(link => {
+                const animationProps = getAnimationProps();
+                const linkStyle = { ...linkBaseStyle(link), ...animationProps.style };
+                const linkClasses = `transition-transform duration-200 hover:scale-105 active:scale-95 ${appearance.linkStyle.borderRadius} ${appearance.linkStyle.shadow} ${animationProps.className || ''}`;
+
                 if (appearance.layout === 'grid') {
                   return (
                     <a
@@ -92,8 +123,8 @@ export const Preview: React.FC<PreviewProps> = ({ profile, links, appearance }) 
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={linkStyle(link)}
-                      className={`flex flex-col items-center justify-center gap-1 p-1 text-center font-medium text-xs aspect-square ${appearance.linkStyle.borderRadius} ${appearance.linkStyle.shadow} transition-transform duration-200 hover:scale-105 active:scale-95`}
+                      style={linkStyle}
+                      className={`flex flex-col items-center justify-center gap-1 p-1 text-center font-medium text-xs aspect-square ${linkClasses}`}
                       title={link.title}
                     >
                       {React.cloneElement(getLinkIcon(link), { className: 'w-8 h-8' })}
@@ -107,8 +138,8 @@ export const Preview: React.FC<PreviewProps> = ({ profile, links, appearance }) 
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={linkStyle(link)}
-                    className={`relative flex items-center justify-center w-full p-4 font-semibold ${appearance.linkStyle.borderRadius} ${appearance.linkStyle.shadow} transition-transform duration-200 hover:scale-105 active:scale-95`}
+                    style={linkStyle}
+                    className={`relative flex items-center justify-center w-full p-4 font-semibold ${linkClasses}`}
                   >
                     <div className="absolute left-4">
                       {React.cloneElement(getLinkIcon(link), { className: 'w-5 h-5' })}

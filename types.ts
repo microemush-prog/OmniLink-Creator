@@ -1,4 +1,3 @@
-
 export interface Link {
   id: string;
   title: string;
@@ -10,6 +9,15 @@ export interface Profile {
   avatarUrl: string;
   name: string;
   bio: string;
+}
+
+export interface CustomAnimation {
+  type: 'subtle-pulse' | 'shake' | 'bounce-light' | 'tada' | 'fadeIn' | 'slideInUp';
+  duration: number; // in seconds
+  delay: number; // in seconds
+  iterationCount: 'infinite' | number;
+  direction: 'normal' | 'reverse' | 'alternate';
+  timingFunction: 'ease' | 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
 }
 
 export interface Appearance {
@@ -31,6 +39,7 @@ export interface Appearance {
   };
   textColor: string;
   layout?: 'list' | 'grid';
+  animation?: string | CustomAnimation;
 }
 
 export interface Theme {
